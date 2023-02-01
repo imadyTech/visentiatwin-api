@@ -1,3 +1,4 @@
+using angoomathAPI.DataModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace angoomathAPI.Controllers

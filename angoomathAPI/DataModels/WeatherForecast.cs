@@ -1,4 +1,4 @@
-namespace angoomathAPI
+namespace angoomathAPI.DataModels
 {
     public class WeatherForecast
     {
