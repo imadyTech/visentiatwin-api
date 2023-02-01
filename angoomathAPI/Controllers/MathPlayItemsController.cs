@@ -10,8 +10,8 @@ using angoomathAPI.DataModels;
 
 namespace angoomathAPI.Controllers
 {
-    [Route("api/MathPlayItems")]
     [ApiController]
+    [Route("/")]
     public class MathPlayItemsController : ControllerBase
     {
         private readonly MathPlayContext _context;
