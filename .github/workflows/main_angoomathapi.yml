@@ -14,27 +14,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-        uses: azure/login@v1
-        with:
-            client-id: ${{ secrets.AZURE_CLIENT_ID }}
-            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
-            enable-AzPSSession: true
-
-      - name: 'Get RG with powershell action'
-        uses: azure/powershell@v1
-        with:
-             inlineScript: |
-               Get-AzResourceGroup
-             azPSVersion: "latest"
-             
       - uses: actions/checkout@v2
 
       - name: Set up .NET Core
-        uses: azure/webapps-deploy@v2
+        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '7.x'
           include-prerelease: true
 
       - name: Build with dotnet
@@ -68,5 +53,5 @@ jobs:
         with:
           app-name: 'angoomathAPI'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BE74E44D9A9841B5BA1628DC3D7CF4DE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CF6B7702C47846AABBF2E8C37B3F80EF }}
           package: .
