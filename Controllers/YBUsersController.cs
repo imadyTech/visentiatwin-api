@@ -15,7 +15,7 @@ namespace YBCarRental3D_API.Controllers
     [ApiController]
     public class YBUsersController : ControllerBase
     {
-        private readonly YBUserContext _context;
+        private readonly YBUserContext _context; 
 
         public YBUsersController(YBUserContext context)
         {
