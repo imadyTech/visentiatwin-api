@@ -8,15 +8,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<YBUserContext>(opt =>
-opt.UseSqlServer(
-    builder.Configuration.GetConnectionString("YBCarRentalContext")))
-    .AddDbContext<YBCarContext>(opt =>
-opt.UseSqlServer(
-    builder.Configuration.GetConnectionString("YBCarRentalContext")))
-    .AddDbContext<YBRentContext>(opt =>
-opt.UseSqlServer(
-    builder.Configuration.GetConnectionString("YBCarRentalContext")));
+
+
+Action<DbContextOptionsBuilder> option;
+if (builder.Environment.IsDevelopment())
+{
+ option = new Action<DbContextOptionsBuilder>(opt => opt.UseSqlServer(
+    builder.Configuration.GetConnectionString("YBCarRentalLocalDb")));
+}
+else
+{
+ option = new Action<DbContextOptionsBuilder>(opt => opt.UseSqlServer(
+    builder.Configuration.GetConnectionString("YBCarRentalAzureDb")));
+}
+
+
+builder.Services
+    .AddDbContext<YBUserContext>(option)
+    .AddDbContext<YBCarContext>(option)
+    .AddDbContext<YBRentContext>(option);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
