@@ -10,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<YBUserContext>(opt =>
 opt.UseSqlServer(
+    builder.Configuration.GetConnectionString("YBCarRentalContext")))
+    .AddDbContext<YBCarContext>(opt =>
+opt.UseSqlServer(
+    builder.Configuration.GetConnectionString("YBCarRentalContext")))
+    .AddDbContext<YBRentContext>(opt =>
+opt.UseSqlServer(
     builder.Configuration.GetConnectionString("YBCarRentalContext")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -35,9 +41,17 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<YBUserContext>();
-    context.Database.EnsureCreated();
-    DbInitializer.Initialize(context);
+    var userContext = services.GetRequiredService<YBUserContext>();
+    userContext.Database.EnsureCreated();
+    DbInitializer.InitializeUsers(userContext);
+
+    var carContext = services.GetRequiredService<YBCarContext>();
+    carContext.Database.EnsureCreated();
+    DbInitializer.InitializeCars(carContext);
+
+    var orderContext = services.GetRequiredService<YBRentContext>();
+    orderContext.Database.EnsureCreated();
+    DbInitializer.InitializeOrders(orderContext);
 }
 app.UseHttpsRedirection();
 

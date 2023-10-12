@@ -17,10 +17,6 @@ namespace YBCarRental3D_API.DataContexts
 
             modelBuilder.Entity<YBUser>().HasKey(e => e.Id);
             modelBuilder.Entity<YBUser>().HasIndex(e => e.UserName).IsUnique();
-
-            //modelBuilder
-            //    .Entity<YBUser>()
-            //    .HasKey(e => new { e.UserName });
         }
     }
 }
