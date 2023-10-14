@@ -26,7 +26,17 @@ else
 builder.Services
     .AddDbContext<YBUserContext>(option)
     .AddDbContext<YBCarContext>(option)
-    .AddDbContext<YBRentContext>(option);
+    .AddDbContext<YBRentContext>(option)
+    .AddCors(options =>
+    {
+        options.AddPolicy("AllowSpecificOrigin", builder =>
+        {
+            //builder.WithOrigins("https://your-allowed-domain.com")
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
