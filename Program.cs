@@ -14,12 +14,26 @@ Action<DbContextOptionsBuilder> option;
 if (builder.Environment.IsDevelopment())
 {
  option = new Action<DbContextOptionsBuilder>(opt => opt.UseSqlServer(
-    builder.Configuration.GetConnectionString("YBCarRentalLocalDb")));
+    builder.Configuration.GetConnectionString("YBCarRentalLocalDb"),
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(30),
+        errorNumbersToAdd: null);
+    }));
 }
 else
 {
  option = new Action<DbContextOptionsBuilder>(opt => opt.UseSqlServer(
-    builder.Configuration.GetConnectionString("YBCarRentalAzureDb")));
+    builder.Configuration.GetConnectionString("YBCarRentalAzureDb"),
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(30),
+        errorNumbersToAdd: null);
+    }));
 }
 
 
