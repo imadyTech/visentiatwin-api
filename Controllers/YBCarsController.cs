@@ -23,8 +23,8 @@ namespace YBCarRental3D_API.Controllers
             _context = context;
         }
 
-        // POST: api/getcars
-        [HttpPost("getcars")]
+        // POST: api/list
+        [HttpPost("list")]
         public async Task<ActionResult<IEnumerable<YBCar>>> GetCars(PageRequest request)
         {
           if (_context.Cars == null)

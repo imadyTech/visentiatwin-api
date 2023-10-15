@@ -52,6 +52,20 @@ namespace YBCarRental3D_API.Controllers
             return yBRent;
         }
 
+        // POST: api/list
+        [HttpPost("list")]
+        public async Task<ActionResult<IEnumerable<YBRent>>> GetRentOrders(PageRequest request)
+        {
+            if (_context.Rents == null)
+            {
+                return NotFound();
+            }
+            return await _context.Rents
+                .Skip(request.PageNum * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+        }
+
         // PUT: api/YBRents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
