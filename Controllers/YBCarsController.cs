@@ -23,15 +23,18 @@ namespace YBCarRental3D_API.Controllers
             _context = context;
         }
 
-        // GET: api/YBCars
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<YBCar>>> GetCars()
+        // POST: api/getcars
+        [HttpPost("getcars")]
+        public async Task<ActionResult<IEnumerable<YBCar>>> GetCars(PageRequest request)
         {
           if (_context.Cars == null)
           {
               return NotFound();
           }
-            return await _context.Cars.ToListAsync();
+            return await _context.Cars
+                .Skip(request.PageNum* request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
         }
 
         // GET: api/YBCars/5
