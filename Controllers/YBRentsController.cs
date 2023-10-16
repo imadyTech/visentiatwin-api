@@ -16,7 +16,7 @@ namespace YBCarRental3D_API.Controllers
     [ApiController]
     public class YBRentsController : ControllerBase
     {
-        private readonly YBRentContext _context;
+        private readonly YBRentContext  _context;
 
         public YBRentsController(YBRentContext context)
         {
@@ -60,13 +60,17 @@ namespace YBCarRental3D_API.Controllers
         [HttpPut("approve")]
         public async Task<IActionResult> ApproveOrder(int id)
         {
-            var yBRent = _context.Rents.Find(id);
-            if (yBRent ==null || yBRent.Status != YB_RentalStatus.pending.ToString() )
+            var order = _context.Rents.Find(id);
+            if (order ==null || order.Status != YB_RentalStatus.pending.ToString() )
             {
                 return BadRequest();
             }
-            yBRent.Status = YB_RentalStatus.approved.ToString();
-            _context.Entry(yBRent).State = EntityState.Modified;
+            order.Status = YB_RentalStatus.approved.ToString();
+            _context.Entry(order).State = EntityState.Modified;
+
+            var user = _context.Users.FirstOrDefault(u=>u.Id==order.UserId);
+            var car  = _context.Cars.FirstOrDefault(c=>c.Id==order.CarId);
+            user.Balance -= car.DayRentPrice * order.RentDays;
 
             try
             {

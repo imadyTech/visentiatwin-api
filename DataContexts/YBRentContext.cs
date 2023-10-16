@@ -10,6 +10,9 @@ namespace YBCarRental3D_API.DataContexts
         {
         }
         public DbSet<YBRent> Rents { get; set; }
+        public DbSet<YBUser> Users { get; set; }
+        public DbSet<YBCar> Cars { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
