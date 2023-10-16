@@ -24,20 +24,9 @@ namespace YBCarRental3D_API.Controllers
             _context = context;
         }
 
-        // GET: api/YBUsers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<YBUser>>> GetUser()
-        {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-            return await _context.Users.ToListAsync();
-        }
-
         // GET: api/YBUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<YBUser>> GetYBUser(int id)
+        public async Task<ActionResult<YBUser>> GetUser(int id)
         {
             //github deploy test
             if (_context.Users == null)
@@ -91,10 +80,11 @@ namespace YBCarRental3D_API.Controllers
 
         // PUT: api/YBUsers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutYBUser(int id, YBUser yBUser)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser(YBUser yBUser)
         {
-            if (id != yBUser.Id)
+            var existingUser = _context.Users.FirstOrDefault(u => u.Id == yBUser.Id);
+            if (existingUser == null)
             {
                 return BadRequest();
             }
@@ -107,7 +97,7 @@ namespace YBCarRental3D_API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!YBUserExists(id))
+                if (!YBUserExists(yBUser.Id))
                 {
                     return NotFound();
                 }
@@ -122,8 +112,8 @@ namespace YBCarRental3D_API.Controllers
 
         // POST: api/YBUsers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<YBUser>> PostYBUser(YBUser yBUser)
+        [HttpPost("register")]
+        public async Task<ActionResult<YBUser>> UserRegister(YBUser yBUser)
         {
             if (_context.Users == null)
             {
@@ -135,25 +125,25 @@ namespace YBCarRental3D_API.Controllers
             return CreatedAtAction("GetYBUser", new { id = yBUser.Id }, yBUser);
         }
 
-        // DELETE: api/YBUsers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteYBUser(int id)
-        {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-            var yBUser = await _context.Users.FindAsync(id);
-            if (yBUser == null)
-            {
-                return NotFound();
-            }
+        //// DELETE: api/YBUsers/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteYBUser(int id)
+        //{
+        //    if (_context.Users == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var yBUser = await _context.Users.FindAsync(id);
+        //    if (yBUser == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.Users.Remove(yBUser);
-            await _context.SaveChangesAsync();
+        //    _context.Users.Remove(yBUser);
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         private bool YBUserExists(int id)
         {

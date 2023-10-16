@@ -39,7 +39,7 @@ namespace YBCarRental3D_API.Controllers
 
         // GET: api/YBCars/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<YBCar>> GetYBCar(int id)
+        public async Task<ActionResult<YBCar>> GetCar(int id)
         {
           if (_context.Cars == null)
           {
@@ -57,14 +57,9 @@ namespace YBCarRental3D_API.Controllers
 
         // PUT: api/YBCars/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutYBCar(int id, YBCar yBCar)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateCar(YBCar yBCar)
         {
-            if (id != yBCar.Id)
-            {
-                return BadRequest();
-            }
-
             _context.Entry(yBCar).State = EntityState.Modified;
 
             try
@@ -73,7 +68,7 @@ namespace YBCarRental3D_API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!YBCarExists(id))
+                if (!YBCarExists(yBCar.Id))
                 {
                     return NotFound();
                 }
@@ -88,8 +83,8 @@ namespace YBCarRental3D_API.Controllers
 
         // POST: api/YBCars
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<YBCar>> PostYBCar(YBCar yBCar)
+        [HttpPost("add")]
+        public async Task<ActionResult<YBCar>> AddCar(YBCar yBCar)
         {
           if (_context.Cars == null)
           {
@@ -102,8 +97,8 @@ namespace YBCarRental3D_API.Controllers
         }
 
         // DELETE: api/YBCars/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteYBCar(int id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteCar(int id)
         {
             if (_context.Cars == null)
             {
