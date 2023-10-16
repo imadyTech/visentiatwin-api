@@ -16,22 +16,26 @@ namespace YBCarRental3D_API.Controllers
     [ApiController]
     public class YBRentsController : ControllerBase
     {
-        private readonly YBRentContext  _context;
+        private readonly YBRentContext  _ordercontext;
+        private readonly YBUserContext  _usercontext;
+        private readonly YBCarContext  _carcontext;
 
-        public YBRentsController(YBRentContext context)
+        public YBRentsController(YBRentContext context,YBUserContext usercontext, YBCarContext carcontext)
         {
-            _context = context;
+            _ordercontext = context;
+            _usercontext = usercontext;
+            _carcontext = carcontext;
         }
 
         // GET: api/YBRents/5
         [HttpGet("{id}")]
         public async Task<ActionResult<YBRent>> GetOrder(int id)
         {
-          if (_context.Rents == null)
+          if (_ordercontext.Rents == null)
           {
               return NotFound();
           }
-            var yBRent = await _context.Rents.FindAsync(id);
+            var yBRent = await _ordercontext.Rents.FindAsync(id);
 
             if (yBRent == null)
             {
@@ -45,11 +49,11 @@ namespace YBCarRental3D_API.Controllers
         [HttpPost("list")]
         public async Task<ActionResult<IEnumerable<YBRent>>> ListOrders(PageRequest request)
         {
-            if (_context.Rents == null)
+            if (_ordercontext.Rents == null)
             {
                 return NotFound();
             }
-            return await _context.Rents
+            return await _ordercontext.Rents
                 .Skip(request.PageNum * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
@@ -57,24 +61,26 @@ namespace YBCarRental3D_API.Controllers
 
         // PUT: api/YBRents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("approve")]
+        [HttpGet("approve")]
         public async Task<IActionResult> ApproveOrder(int id)
         {
-            var order = _context.Rents.Find(id);
+            var order = _ordercontext.Rents.Find(id);
             if (order ==null || order.Status != YB_RentalStatus.pending.ToString() )
             {
                 return BadRequest();
             }
             order.Status = YB_RentalStatus.approved.ToString();
-            _context.Entry(order).State = EntityState.Modified;
+            _ordercontext.Entry(order).State = EntityState.Modified;
 
-            var user = _context.Users.FirstOrDefault(u=>u.Id==order.UserId);
-            var car  = _context.Cars.FirstOrDefault(c=>c.Id==order.CarId);
+            var user = _usercontext.Users.FirstOrDefault(u=>u.Id==order.UserId);
+            var car  = _carcontext.Cars.FirstOrDefault(c=>c.Id==order.CarId);
             user.Balance -= car.DayRentPrice * order.RentDays;
+            _usercontext.Entry(user).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _ordercontext.SaveChangesAsync();
+                await _usercontext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -91,20 +97,20 @@ namespace YBCarRental3D_API.Controllers
         }
         // PUT: api/YBRents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("reject")]
+        [HttpGet("reject")]
         public async Task<IActionResult> RejectOrder(int id)
         {
-            var yBRent = _context.Rents.Find(id);
+            var yBRent = _ordercontext.Rents.Find(id);
             if (yBRent == null || yBRent.Status != YB_RentalStatus.pending.ToString())
             {
                 return BadRequest();
             }
             yBRent.Status = YB_RentalStatus.rejected.ToString();
-            _context.Entry(yBRent).State = EntityState.Modified;
+            _ordercontext.Entry(yBRent).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _ordercontext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -122,15 +128,15 @@ namespace YBCarRental3D_API.Controllers
 
         // POST: api/YBRents
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("placeorder")]
+        [HttpPost("add")]
         public async Task<ActionResult<YBRent>> PlaceOrder(YBRent yBRent)
         {
-          if (_context.Rents == null)
+          if (_ordercontext.Rents == null)
           {
               return Problem("Entity set 'YBRentContext.Rents'  is null.");
           }
-            _context.Rents.Add(yBRent);
-            await _context.SaveChangesAsync();
+            _ordercontext.Rents.Add(yBRent);
+            await _ordercontext.SaveChangesAsync();
 
             return CreatedAtAction("GetYBRent", new { id = yBRent.Id }, yBRent);
         }
@@ -157,7 +163,7 @@ namespace YBCarRental3D_API.Controllers
 
         private bool YBRentExists(int id)
         {
-            return (_context.Rents?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_ordercontext.Rents?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
