@@ -48,7 +48,6 @@ namespace YBCarRental3D_API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<YBUser>> UserLogin(LoginRequest loginRequest)
         {
-            Console.WriteLine($"attempt of login:{loginRequest.UserName}:{loginRequest.Password}");
             if (loginRequest == null) return BadRequest("Invalid login request.");
 
             var yBUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.UserName);
@@ -76,6 +75,38 @@ namespace YBCarRental3D_API.Controllers
                 }
             }
             return Ok(yBUser);
+        }
+
+        [HttpPost("logout")]
+        public async Task<ActionResult<bool>> UserLogout(LoginRequest loginRequest)
+        {
+            if (loginRequest == null) return BadRequest("Invalid login request.");
+
+            var yBUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.UserName);
+            if (yBUser == null) return NotFound("User not found.");
+
+            if (loginRequest.Password != yBUser.Password)
+                return Unauthorized("Invalid password.");
+
+            yBUser.LoginStatus = false;
+            _context.Entry(yBUser).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!YBUserExists(yBUser.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(true);
         }
 
         // PUT: api/YBUsers/5
