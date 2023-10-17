@@ -150,6 +150,8 @@ namespace YBCarRental3D_API.Controllers
             {
                 return Problem("Entity set 'YBUserContext.User'  is null.");
             }
+            Random random = new Random();
+            yBUser.Id = _context.Users.Max(u=> u.Id) + random.Next(1, 101);
             _context.Users.Add(yBUser);
             await _context.SaveChangesAsync();
 
