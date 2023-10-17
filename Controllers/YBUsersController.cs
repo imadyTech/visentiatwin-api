@@ -156,6 +156,21 @@ namespace YBCarRental3D_API.Controllers
             return CreatedAtAction("GetYBUser", new { id = yBUser.Id }, yBUser);
         }
 
+        // POST: api/list
+        [HttpPost("list")]
+        public async Task<ActionResult<IEnumerable<YBUser>>> ListOrders(PageRequest request)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            return await _context.Users
+                .Skip(request.PageNum * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+        }
+
+
         //// DELETE: api/YBUsers/5
         //[HttpDelete("{id}")]
         //public async Task<IActionResult> DeleteYBUser(int id)
