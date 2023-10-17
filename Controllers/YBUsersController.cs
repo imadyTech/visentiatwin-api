@@ -155,7 +155,7 @@ namespace YBCarRental3D_API.Controllers
             _context.Users.Add(yBUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetYBUser", new { id = yBUser.Id }, yBUser);
+            return CreatedAtAction("GetUser", new { id = yBUser.Id }, yBUser);
         }
 
         // POST: api/list

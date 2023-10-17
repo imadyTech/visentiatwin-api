@@ -135,10 +135,13 @@ namespace YBCarRental3D_API.Controllers
           {
               return Problem("Entity set 'YBRentContext.Rents'  is null.");
           }
+            Random random = new Random();
+            yBRent.Id = _ordercontext.Rents.Max(o => o.Id) + random.Next(1, 101);
+
             _ordercontext.Rents.Add(yBRent);
             await _ordercontext.SaveChangesAsync();
 
-            return CreatedAtAction("GetYBRent", new { id = yBRent.Id }, yBRent);
+            return CreatedAtAction("GetOrder", new { id = yBRent.Id }, yBRent);
         }
 
         //// DELETE: api/YBRents/5

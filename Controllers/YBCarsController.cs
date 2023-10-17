@@ -27,12 +27,12 @@ namespace YBCarRental3D_API.Controllers
         [HttpPost("list")]
         public async Task<ActionResult<IEnumerable<YBCar>>> GetCars(PageRequest request)
         {
-          if (_context.Cars == null)
-          {
-              return NotFound();
-          }
+            if (_context.Cars == null)
+            {
+                return NotFound();
+            }
             return await _context.Cars
-                .Skip(request.PageNum* request.PageSize)
+                .Skip(request.PageNum * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
         }
@@ -41,10 +41,10 @@ namespace YBCarRental3D_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<YBCar>> GetCar(int id)
         {
-          if (_context.Cars == null)
-          {
-              return NotFound();
-          }
+            if (_context.Cars == null)
+            {
+                return NotFound();
+            }
             var yBCar = await _context.Cars.FindAsync(id);
 
             if (yBCar == null)
@@ -86,14 +86,16 @@ namespace YBCarRental3D_API.Controllers
         [HttpPost("add")]
         public async Task<ActionResult<YBCar>> AddCar(YBCar yBCar)
         {
-          if (_context.Cars == null)
-          {
-              return Problem("Entity set 'YBCarContext.Cars'  is null.");
-          }
+            if (_context.Cars == null)
+            {
+                return Problem("Entity set 'YBCarContext.Cars'  is null.");
+            }
+            Random random = new Random();
+            yBCar.Id = _context.Cars.Max(u => u.Id) + random.Next(1, 101);
             _context.Cars.Add(yBCar);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetYBCar", new { id = yBCar.Id }, yBCar);
+            return CreatedAtAction("GetCar", new { id = yBCar.Id }, yBCar);
         }
 
         // DELETE: api/YBCars/5
