@@ -60,7 +60,14 @@ namespace YBCarRental3D_API.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCar(YBCar yBCar)
         {
-            _context.Entry(yBCar).State = EntityState.Modified;
+            var existingCar = _context.Cars.FirstOrDefault(u => u.Id == yBCar.Id);
+            if (existingCar == null)
+            {
+                return BadRequest();
+            }
+
+            // Update the existingUser entity with the values from yBUser
+            _context.Entry(existingCar).CurrentValues.SetValues(yBCar);
 
             try
             {

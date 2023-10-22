@@ -120,7 +120,7 @@ namespace YBCarRental3D_API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(yBUser).State = EntityState.Modified;
+            _context.Entry(existingUser).CurrentValues.SetValues(yBUser);
 
             try
             {
@@ -137,7 +137,6 @@ namespace YBCarRental3D_API.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -160,7 +159,7 @@ namespace YBCarRental3D_API.Controllers
 
         // POST: api/list
         [HttpPost("list")]
-        public async Task<ActionResult<IEnumerable<YBUser>>> ListOrders(PageRequest request)
+        public async Task<ActionResult<IEnumerable<YBUser>>> ListUsers(PageRequest request)
         {
             if (_context.Users == null)
             {

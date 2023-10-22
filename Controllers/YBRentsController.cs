@@ -64,17 +64,17 @@ namespace YBCarRental3D_API.Controllers
         [HttpGet("approve")]
         public async Task<IActionResult> ApproveOrder(int id)
         {
-            var order = _ordercontext.Rents.Find(id);
-            if (order ==null || order.Status != YB_RentalStatus.pending.ToString() )
+            var existingOrder = _ordercontext.Rents.Find(id);
+            if (existingOrder ==null || existingOrder.Status != YB_RentalStatus.pending.ToString() )
             {
                 return BadRequest();
             }
-            order.Status = YB_RentalStatus.approved.ToString();
-            _ordercontext.Entry(order).State = EntityState.Modified;
+            existingOrder.Status = YB_RentalStatus.approved.ToString();
+            _ordercontext.Entry(existingOrder).State = EntityState.Modified;
 
-            var user = _usercontext.Users.FirstOrDefault(u=>u.Id==order.UserId);
-            var car  = _carcontext.Cars.FirstOrDefault(c=>c.Id==order.CarId);
-            user.Balance -= car.DayRentPrice * order.RentDays;
+            var user = _usercontext.Users.FirstOrDefault(u=>u.Id==existingOrder.UserId);
+            var car  = _carcontext.Cars.FirstOrDefault(c=>c.Id==existingOrder.CarId);
+            user.Balance -= car.DayRentPrice * existingOrder.RentDays;
             _usercontext.Entry(user).State = EntityState.Modified;
 
             try
