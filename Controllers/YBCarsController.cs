@@ -16,22 +16,24 @@ namespace YBCarRental3D_API.Controllers
     [ApiController]
     public class YBCarsController : ControllerBase
     {
-        private readonly YBCarContext _context;
+        private readonly YBCarContext _carContext;
+        private readonly YBRentContext _orderContext;
 
-        public YBCarsController(YBCarContext context)
+        public YBCarsController(YBCarContext context, YBRentContext orderContext)
         {
-            _context = context;
+            _carContext = context;
+            _orderContext = orderContext;
         }
 
         // POST: api/list
         [HttpPost("list")]
         public async Task<ActionResult<IEnumerable<YBCar>>> GetCars(PageRequest request)
         {
-            if (_context.Cars == null)
+            if (_carContext.Cars == null)
             {
-                return NotFound();
+                return NotFound("Database is empty.");
             }
-            return await _context.Cars
+            return await _carContext.Cars
                 .Skip(request.PageNum * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
@@ -41,18 +43,18 @@ namespace YBCarRental3D_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<YBCar>> GetCar(int id)
         {
-            if (_context.Cars == null)
+            if (_carContext.Cars == null)
             {
-                return NotFound();
+                return NotFound("Database is empty.");
             }
-            var yBCar = await _context.Cars.FindAsync(id);
+            var yBCar = await _carContext.Cars.FindAsync(id);
 
             if (yBCar == null)
             {
-                return NotFound();
+                return NotFound("Car is not found.");
             }
 
-            return yBCar;
+            return Ok(yBCar);
         }
 
         // PUT: api/YBCars/5
@@ -60,20 +62,20 @@ namespace YBCarRental3D_API.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCar(YBCar yBCar)
         {
-            var existingCar = _context.Cars.FirstOrDefault(u => u.Id == yBCar.Id);
+            var existingCar = _carContext.Cars.FirstOrDefault(u => u.Id == yBCar.Id);
             if (existingCar == null)
             {
-                return BadRequest();
+                return BadRequest("Car is not exist.");
             }
 
             // Update the existingUser entity with the values from yBUser
-            _context.Entry(existingCar).CurrentValues.SetValues(yBCar);
+            _carContext.Entry(existingCar).CurrentValues.SetValues(yBCar);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _carContext.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBCarExists(yBCar.Id))
                 {
@@ -81,11 +83,11 @@ namespace YBCarRental3D_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
 
-            return NoContent();
+            return Ok(yBCar);
         }
 
         // POST: api/YBCars
@@ -93,14 +95,14 @@ namespace YBCarRental3D_API.Controllers
         [HttpPost("add")]
         public async Task<ActionResult<YBCar>> AddCar(YBCar yBCar)
         {
-            if (_context.Cars == null)
+            if (_carContext.Cars == null)
             {
                 return Problem("Entity set 'YBCarContext.Cars'  is null.");
             }
             Random random = new Random();
-            yBCar.Id = _context.Cars.Max(u => u.Id) + random.Next(1, 101);
-            _context.Cars.Add(yBCar);
-            await _context.SaveChangesAsync();
+            yBCar.Id = _carContext.Cars.Max(u => u.Id) + random.Next(1, 101);
+            _carContext.Cars.Add(yBCar);
+            await _carContext.SaveChangesAsync();
 
             return CreatedAtAction("GetCar", new { id = yBCar.Id }, yBCar);
         }
@@ -109,25 +111,27 @@ namespace YBCarRental3D_API.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCar(int id)
         {
-            if (_context.Cars == null)
+            if (_carContext.Cars == null)
             {
                 return NotFound();
             }
-            var yBCar = await _context.Cars.FindAsync(id);
+            var yBCar = await _carContext.Cars.FindAsync(id);
             if (yBCar == null)
             {
                 return NotFound();
             }
+            if (_orderContext.Rents.Any(o => o.CarId == id))
+                return Forbid("Order(s) link to this car exist.");
 
-            _context.Cars.Remove(yBCar);
-            await _context.SaveChangesAsync();
+            _carContext.Cars.Remove(yBCar);
+            await _carContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool YBCarExists(int id)
         {
-            return (_context.Cars?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_carContext.Cars?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

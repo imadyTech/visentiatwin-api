@@ -61,7 +61,7 @@ namespace YBCarRental3D_API.Controllers
 
         // PUT: api/YBRents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpGet("approve")]
+        [HttpGet("approve/{id}")]
         public async Task<IActionResult> ApproveOrder(int id)
         {
             var existingOrder = _ordercontext.Rents.Find(id);
@@ -82,7 +82,7 @@ namespace YBCarRental3D_API.Controllers
                 await _ordercontext.SaveChangesAsync();
                 await _usercontext.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBRentExists(id))
                 {
@@ -90,14 +90,14 @@ namespace YBCarRental3D_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
-            return NoContent();
+            return Ok();
         }
         // PUT: api/YBRents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpGet("reject")]
+        [HttpGet("reject/{id}")]
         public async Task<IActionResult> RejectOrder(int id)
         {
             var yBRent = _ordercontext.Rents.Find(id);
@@ -112,7 +112,7 @@ namespace YBCarRental3D_API.Controllers
             {
                 await _ordercontext.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBRentExists(id))
                 {
@@ -120,10 +120,10 @@ namespace YBCarRental3D_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/YBRents

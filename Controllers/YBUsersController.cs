@@ -40,7 +40,7 @@ namespace YBCarRental3D_API.Controllers
                 return NotFound();
             }
 
-            return yBUser;
+            return Ok(yBUser);
         }
 
 
@@ -63,7 +63,7 @@ namespace YBCarRental3D_API.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBUserExists(yBUser.Id))
                 {
@@ -71,7 +71,7 @@ namespace YBCarRental3D_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
             return Ok(yBUser);
@@ -95,7 +95,7 @@ namespace YBCarRental3D_API.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBUserExists(yBUser.Id))
                 {
@@ -103,7 +103,7 @@ namespace YBCarRental3D_API.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
             return Ok(true);
@@ -117,7 +117,7 @@ namespace YBCarRental3D_API.Controllers
             var existingUser = _context.Users.FirstOrDefault(u => u.Id == yBUser.Id);
             if (existingUser == null)
             {
-                return BadRequest();
+                return NotFound("User does not exist.");
             }
 
             _context.Entry(existingUser).CurrentValues.SetValues(yBUser);
@@ -126,18 +126,18 @@ namespace YBCarRental3D_API.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!YBUserExists(yBUser.Id))
                 {
-                    return NotFound();
+                    return NotFound("User does not exist.");
                 }
                 else
                 {
-                    throw;
+                    return Conflict(e.Message);
                 }
             }
-            return NoContent();
+            return Ok(yBUser);
         }
 
         // POST: api/YBUsers
@@ -163,7 +163,7 @@ namespace YBCarRental3D_API.Controllers
         {
             if (_context.Users == null)
             {
-                return NotFound();
+                return NotFound("Database is empty.");
             }
             return await _context.Users
                 .Skip(request.PageNum * request.PageSize)
