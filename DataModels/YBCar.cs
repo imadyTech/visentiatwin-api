@@ -3,8 +3,9 @@
     public class YBCar
     {
         public int      Id { get; set; }
-        public string   Make { get; set; }
-        public string   Model { get; set; }
+        public string?  Make { get; set; }
+        public string?  Model { get; set; }
+        public string?  UnityModelName { get; set; }
         public int      Year { get; set; }
         public int      Mileage { get; set; }
         public bool     IsAvailable { get; set; }//is the car available now?
