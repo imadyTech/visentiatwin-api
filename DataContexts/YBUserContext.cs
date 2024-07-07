@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using YBCarRental3D_API.DataModels;
+using VisentiaTwin_API.DataModels;
 
-namespace YBCarRental3D_API.DataContexts
+namespace VisentiaTwin_API.DataContexts
 {
     public class YBUserContext : DbContext
     {

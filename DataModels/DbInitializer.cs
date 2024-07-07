@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-using YBCarRental3D_API.DataContexts;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using VisentiaTwin_API.DataContexts;
 
-namespace YBCarRental3D_API.DataModels
+namespace VisentiaTwin_API.DataModels
 {
     public enum YB_RentalStatus
     {
@@ -12,6 +13,68 @@ namespace YBCarRental3D_API.DataModels
     }
     public static class DbInitializer
     {
+        public static void InitializeSystem(VTSystemContext context)
+        {
+            // Ensure the database is created
+            context.Database.EnsureCreated();
+
+            // Check if there are any systems already present
+            if (context.VTSystems.Any())
+            {
+                return; // DB has been seeded
+            }
+
+            // Create initial data
+            var systems = new VTSystem[]
+            {
+            new VTSystem { Name = "System1", Description = "First system", Version = "1.0", Author = "Author1" },
+            new VTSystem { Name = "System2", Description = "Second system", Version = "1.0", Author = "Author2" }
+            };
+
+            foreach (var s in systems)
+            {
+                context.VTSystems.Add(s);
+            }
+            context.SaveChanges();
+
+            var components = new VTComponent[]
+            {
+            new VTComponent { Name = "Component1", Description = "First component", Version = "1.0", Author = "Author1", Cost = 100.0f },
+            new VTComponent { Name = "Component2", Description = "Second component", Version = "1.0", Author = "Author2", Cost = 150.0f }
+            };
+
+            foreach (var c in components)
+            {
+                context.VTComponents.Add(c);
+            }
+            context.SaveChanges();
+
+            var nodes = new VTNode[]
+            {
+            new VTNode { Name = "Node1", Description = "First node", Version = "1.0", Author = "Author1", VTSystem = systems[0] },
+            new VTNode { Name = "Node2", Description = "Second node", Version = "1.0", Author = "Author2", VTSystem = systems[1] }
+            };
+
+            foreach (var n in nodes)
+            {
+                context.VTNodes.Add(n);
+            }
+            context.SaveChanges();
+
+            var nodeComponents = new VTNodeComponent[]
+            {
+            new VTNodeComponent { VTNodeId = nodes[0].VTNodeId, VTComponentId = components[0].VTComponentId },
+            new VTNodeComponent { VTNodeId = nodes[0].VTNodeId, VTComponentId = components[1].VTComponentId },
+            new VTNodeComponent { VTNodeId = nodes[1].VTNodeId, VTComponentId = components[0].VTComponentId }
+            };
+
+            foreach (var nc in nodeComponents)
+            {
+                context.VTNodeComponents.Add(nc);
+            }
+            context.SaveChanges();
+        }
+
         public static void InitializeUsers(YBUserContext context)
         {
             // Look for any students.

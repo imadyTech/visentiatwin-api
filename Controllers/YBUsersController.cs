@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
-using YBCarRental3D_API.DataContexts;
-using YBCarRental3D_API.DataModels;
+using VisentiaTwin_API.DataContexts;
+using VisentiaTwin_API.DataModels;
 
-namespace YBCarRental3D_API.Controllers
+namespace VisentiaTwin_API.Controllers
 {
     [Route("api/[controller]")]
     [EnableCors("AllowSpecificOrigin")]

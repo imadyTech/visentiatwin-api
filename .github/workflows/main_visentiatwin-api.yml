@@ -25,13 +25,13 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/VisentiaTwin_api
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{env.DOTNET_ROOT}}/VisentiaTwin_api
 
   deploy:
     runs-on: windows-latest
@@ -51,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0393FAAF7F3F43FBAB8AB16AE72D1F25 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_310A8B119B924F8A8632577F8AA0057F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_00A31C1AA3394D0C8E9E7B61A8038FAE }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9306076BC5E34923AB39ABA100839CCD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_439930E113D7486CBE2D3C948525030C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_81417060EAA24DED8FD93F6365B82C95 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
