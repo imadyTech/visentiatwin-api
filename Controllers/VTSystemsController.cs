@@ -31,10 +31,10 @@ namespace VisentiaTwin_API.Controllers
             {
                 return NotFound("Database is empty.");
             }
-            var systems= await _context.VTSystems
-                .Include(s=>s.VTNodes)
-                .ThenInclude(nc=>nc.VTNodeComponents)
-                .ThenInclude(nc=>nc.VTComponent)
+            var systems = await _context.VTSystems
+                .Include(s => s.VTNodes)
+                .ThenInclude(nc => nc.VTNodeComponents)
+                .ThenInclude(nc => nc.VTComponent)
                 .Skip(request.PageNum * request.PageSize)
                 .Take(request.PageSize)
                 .Select(s => new
